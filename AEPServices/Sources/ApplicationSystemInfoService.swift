@@ -106,6 +106,11 @@ class ApplicationSystemInfoService: SystemInfoService {
         #if targetEnvironment(macCatalyst) || os(tvOS)
             return "unknown"
         #else
+        if #available(iOS 16, *) {
+            // Since iOS 16, `serviceSubscriberCellularProviders` is deprecated without replacement.
+            // `carrierName` always returns "--" and may throw errors into the logs.
+            return "--"
+        } else {
             let networkInfo = CTTelephonyNetworkInfo()
             let carrier: CTCarrier?
             if #available(iOS 12, *) {
@@ -115,6 +120,7 @@ class ApplicationSystemInfoService: SystemInfoService {
             }
 
             return carrier?.carrierName
+        }
         #endif
     }
 
